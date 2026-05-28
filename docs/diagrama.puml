@@ -1,0 +1,121 @@
+@startuml loja_verde
+title Loja Verde - Arquitetura refatorada (camadas + DIP)
+
+skinparam classAttributeIconSize 0
+skinparam packageStyle rectangle
+
+package "models" {
+  class Customer {
+    +nome: str
+    +tipo: CustomerType
+  }
+  class OrderItem {
+    +nome: str
+    +preco: float
+    +quantidade: int
+    +tipo: str
+    +subtotal: float
+  }
+  class Order {
+    +customer: Customer
+    +items: list<OrderItem>
+    +total: float
+    +status: OrderStatus
+  }
+  Order *-- Customer
+  Order *-- OrderItem
+}
+
+package "strategies" {
+  abstract class CustomerDiscountStrategy {
+    +apply(subtotal): float
+  }
+  abstract class ItemPricingRule {
+    +apply(item, price): float
+  }
+  abstract class PaymentStrategy {
+    +charge(order): PaymentResult
+  }
+  CustomerDiscountStrategy <|-- NoCustomerDiscount
+  CustomerDiscountStrategy <|-- VipDiscount
+  CustomerDiscountStrategy <|-- CorporateDiscount
+  ItemPricingRule <|-- TypeDiscountRule
+  PaymentStrategy <|-- CardPayment
+  PaymentStrategy <|-- PixPayment
+  PaymentStrategy <|-- BoletoPayment
+}
+
+package "observers" {
+  abstract class NotificationChannel {
+    +update(event)
+  }
+  class OrderNotifier {
+    +subscribe(channel)
+    +publish(event)
+  }
+  interface MessageSink {
+    +send(channel, recipient, message)
+  }
+  OrderNotifier o-- NotificationChannel
+  NotificationChannel ..> MessageSink
+  NotificationChannel <|-- EmailChannel
+  NotificationChannel <|-- SmsChannel
+  NotificationChannel <|-- AccountManagerChannel
+  NotificationChannel <|-- LoyaltyChannel
+}
+
+package "repositories" {
+  abstract class OrderRepository {
+    +save(order): int
+    +get(id): Order
+    +update_status(id, status)
+    +list_all(): list<Order>
+    +total_by_customer(name): float
+  }
+  OrderRepository <|-- SqliteOrderRepository
+}
+
+package "factories" {
+  abstract class OrderFactory {
+    +discount_strategy(): CustomerDiscountStrategy
+    +notification_channels(): list<NotificationChannel>
+    +create_order(...): Order
+  }
+  OrderFactory <|-- NormalOrderFactory
+  OrderFactory <|-- VipOrderFactory
+  OrderFactory <|-- CorporateOrderFactory
+  OrderFactory ..> PricingService
+}
+
+package "services" {
+  class OrderService
+  class PaymentService
+  class PricingService
+  class ReportService
+  OrderService ..> OrderRepository
+  OrderService ..> OrderFactory
+  OrderService ..> OrderNotifier
+  PaymentService ..> OrderRepository
+  PaymentService ..> PaymentStrategy
+  PaymentService ..> OrderService
+  PricingService ..> ItemPricingRule
+  PricingService ..> CustomerDiscountStrategy
+  ReportService ..> OrderRepository
+}
+
+package "extensions (aditivas - OCP)" {
+  class CryptoPayment
+  class WhatsAppChannel
+  class VolumeDiscountRule
+  PaymentStrategy <|-- CryptoPayment
+  NotificationChannel <|-- WhatsAppChannel
+  ItemPricingRule <|-- VolumeDiscountRule
+}
+
+note bottom of "extensions (aditivas - OCP)"
+  As 3 extensões só ADICIONAM subclasses das
+  abstrações existentes. Nenhuma classe antiga
+  foi modificada (Open/Closed Principle).
+end note
+
+@enduml
