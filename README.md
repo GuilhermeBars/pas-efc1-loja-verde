@@ -5,6 +5,10 @@ caracterização (Golden Master), princípios SOLID, Clean Code e padrões GoF.
 
 ## Integrantes
 
+Não entramos em grupo separado para esta disciplina porque nosso grupo de
+Projeto Integrador tem 7 integrantes, uma exceção autorizada pela professora
+de Projeto Integrador. Mantivemos o mesmo grupo aqui.
+
 | Nome | RA |
 |------|----|
 | Felipe Cosmo Granziol | 24021602 |
@@ -14,10 +18,6 @@ caracterização (Golden Master), princípios SOLID, Clean Code e padrões GoF.
 | João Celso | 24012463 |
 | Pedro Tiezo Sales Shimizu | 24005158 |
 | Vitor Hugo Barbosa | 24018852 |
-
-Não entramos em grupo separado para esta disciplina porque nosso grupo de
-Projeto Integrador tem 7 integrantes, uma exceção autorizada pela professora
-de Projeto Integrador. Mantivemos o mesmo grupo aqui.
 
 ## Estrutura
 
