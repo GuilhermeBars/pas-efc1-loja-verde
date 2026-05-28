@@ -1,14 +1,16 @@
 """Raiz de composição da aplicação (Composition Root).
 
-Aqui — e somente aqui — as dependências concretas são instanciadas e
-injetadas. As extensões obrigatórias entram apenas adicionando classes
-novas a esta montagem, sem alterar nenhuma classe existente.
+Aqui, e somente aqui, as dependências concretas são instanciadas e
+injetadas. As extensões obrigatórias (criptomoeda, WhatsApp e desconto por
+volume) são ativadas apenas adicionando classes novas a esta montagem,
+sem alterar nenhuma classe existente.
 """
 from __future__ import annotations
 
 from dataclasses import dataclass
 
 from src.extensions.crypto_payment import CryptoPayment
+from src.extensions.volume_discount import VolumeDiscountRule
 from src.extensions.whatsapp_channel import WhatsAppChannel
 from src.factories.order_factory import (
     CorporateOrderFactory,
@@ -58,8 +60,8 @@ def build_services(
 ) -> AppServices:
     """Monta a aplicação injetando todas as dependências.
 
-    `enable_extensions` liga/desliga as features novas; os Golden Master
-    Tests montam com elas desligadas para reproduzir o legado.
+    `enable_extensions` liga/desliga as três features novas; os Golden
+    Master Tests montam com elas desligadas para reproduzir o legado.
     """
     sink = sink if sink is not None else ConsoleSink()
 
@@ -72,6 +74,7 @@ def build_services(
     global_channels: list[NotificationChannel] = []
 
     if enable_extensions:
+        item_rules.append(VolumeDiscountRule())
         payment_strategies["cripto"] = CryptoPayment()
         global_channels.append(WhatsAppChannel(sink))
 
