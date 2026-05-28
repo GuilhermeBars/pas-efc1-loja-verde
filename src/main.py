@@ -9,6 +9,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from src.extensions.crypto_payment import CryptoPayment
+from src.extensions.whatsapp_channel import WhatsAppChannel
 from src.factories.order_factory import (
     CorporateOrderFactory,
     NormalOrderFactory,
@@ -72,6 +73,7 @@ def build_services(
 
     if enable_extensions:
         payment_strategies["cripto"] = CryptoPayment()
+        global_channels.append(WhatsAppChannel(sink))
 
     pricing = PricingService(item_rules)
     repository = SqliteOrderRepository(db_path)
