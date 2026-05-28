@@ -1,0 +1,39 @@
+[project]
+name = "loja-verde"
+version = "1.0.0"
+description = "Refatoração guiada por SOLID, Clean Code e padrões GoF (EFC1)"
+requires-python = ">=3.9"
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-v"
+
+[tool.coverage.run]
+source = ["src"]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+]
+
+[tool.ruff]
+line-length = 90
+target-version = "py39"
+# legacy.py é o código "antes" (mantido intencionalmente com os smells originais)
+extend-exclude = ["legacy.py"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "UP", "B", "C90"]
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.mypy]
+python_version = "3.9"
+strict = true
+files = ["src"]
