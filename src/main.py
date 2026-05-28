@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+from src.extensions.crypto_payment import CryptoPayment
 from src.factories.order_factory import (
     CorporateOrderFactory,
     NormalOrderFactory,
@@ -70,9 +71,7 @@ def build_services(
     global_channels: list[NotificationChannel] = []
 
     if enable_extensions:
-        # As três extensões obrigatórias são registradas aqui nos commits
-        # seguintes (Sprint 2) — Open/Closed na prática.
-        pass
+        payment_strategies["cripto"] = CryptoPayment()
 
     pricing = PricingService(item_rules)
     repository = SqliteOrderRepository(db_path)
@@ -132,7 +131,7 @@ def main() -> None:
             Customer("Empresa XYZ", CustomerType.CORPORATIVO), its3
         )
         assert pedido3.id is not None
-        app.payment_service.process(pedido3.id, "boleto", 600)
+        app.payment_service.process(pedido3.id, "cripto", 600)
 
     print()
     print(app.report_service.sales_report())
